@@ -11,10 +11,10 @@ def runge(f, x0, t0, t1, h):
     for i in range(1, n+1):
         temp = t
         t += h
-        k1 = h * f(temp)
-        k2 = h * f(temp + h / 2)
-        k3 = h * f(temp + h / 2)
-        k4 = h * f(temp + h)
+        k1 = h * f(temp, x)
+        k2 = h * f(temp + h/2, x + h/2*k1)
+        k3 = h * f(temp + h/2, x + h/2*k2)
+        k4 = h * f(temp + h, x + h*k3)
         x += (k1 + 2*k2 + 2*k3 + k4 )/6
         res += [[t, x]]
     return res
@@ -28,11 +28,11 @@ def euler(f, x0, t0, t1, h):
     for i in range (1, n+1):
         temp = t
         t += h
-        x += f(temp)*h
+        x += f(temp, x)*h
         res += [[t, x]]
     return res
 
-def f1(t):
+def f1(t, x):
     return t**3/2
 
 
