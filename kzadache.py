@@ -35,7 +35,7 @@ def zadacha(vector, dt, t0):
         t.append(t0 - check_time(dt, t0))
     return t, vectors
 
-res_time, res_vector = zadacha(vector, 0.1, 10000)
+res_time, res_vector = zadacha(vector, 1, 100000)
 arr_x = [vec[0] for vec in res_vector]
 arr_y = [vec[1] for vec in res_vector]
 
