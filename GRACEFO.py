@@ -42,8 +42,9 @@ def calculate_kepler_elements(r, v, mu = 398600.4418):
     mod_v = np.linalg.norm(v)
     
     a = (mu * mod_r)/(2 * mu - mod_v**2 * mod_r)  
+    e = (np.dot((np.dot(v, v) - mu/mod_r), r) - np.dot(np.dot(r, v), v))/mu
 
-    return Omega, i, a
+    return Omega, i, a, e
 
 with open('gracefo.txt', 'r') as f:
     file_content = f.read()
@@ -54,20 +55,21 @@ times, state_vectors = parse_gracefo_data(file_content)
 Omega_res = []
 i_res = []
 a_res=[]
-e = 0
+e_res = []
 mu=398600.4418e9
 Re = 6378.1e3
     
 for g in range(len(state_vectors)):
     r = state_vectors[g][:3]  
     v = state_vectors[g][3:]  
-    Omega, i, a = calculate_kepler_elements(r, v, mu)
+    Omega, i, a, e = calculate_kepler_elements(r, v, mu)
     Omega_res += [Omega]
     i_res += [i]
     a_res += [a]
+    e_res += [e]
 a = np.mean(a_res)
 i = np.mean(i_res)
-
+e = np.mean(e_res)
 
 
 fig, ax = plt.subplots()
@@ -76,11 +78,16 @@ ax.scatter(times, Omega_res, s=1, alpha=0.7, color="blue")
 ax.set_xlabel('Время (минуты)')
 ax.set_ylabel('Долгота восходящего узла')
 ax.grid(True, alpha=0.3)
-k, b = np.polyfit(times, Omega_res, 1)
+times2 = times[:10000]
+Omega_res2 = Omega_res[:10000]
+k, b = np.polyfit(times2, Omega_res2, 1)
 ax.plot(times, k*times + b, 'r-', linewidth=2, label=f'МНК: y={a:.4f}x+{b:.4f}')
 print("k = ", k)
 print("a = ", a)
 print("i = ", i)
+print("e = ", e)
 plt.show()
 j2 = (2 * k * a**2 * (1 - e**2)**2)/(-3 * (mu/a**3)**0.5 * Re**2 * math.cos(i))*10**3
 print("J2 = ", j2, " * 10^(-3)")
+
+print(times[-1]-times[0])
