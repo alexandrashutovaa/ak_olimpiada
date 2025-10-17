@@ -14,8 +14,8 @@ def check_time(dt, t0):
         return 0
     
 def f(vector, t):
-    r = r = np.linalg.norm(vector[:3])
-    aceleration = np.array(-mu/r**3 * vector[:3])
+    r = np.linalg.norm(vector[:3])
+    aceleration = -mu/r**3 * vector[:3]
     return np.concatenate([vector[3:6], aceleration])
 
 def rk_step(f, vector, dt, t0):
@@ -25,21 +25,26 @@ def rk_step(f, vector, dt, t0):
     k4 = f(vector + dt*k3, t0 + dt)
     vector += (k1 + 2*k2 + 2*k3 + k4 )/6
     return vector, t0+dt
+
+'''создать двумерный массив размера 6 на n итый элемент содержит все элементы на итом шаге
+функцию чектайм убрать просто в конце вычесть и получится нужный остаток
+np.zeros((n, 6)) 
+с т то же самое, создать одномерный массив тоже zeros'''
      
 def zadacha(vector, dt, t0):
     t = []
     vectors = []
     vector = vector.astype(np.float64)
-    vectors.append(vector.copy())
+    vectors.append(vector)
     t.append(0)
     for i in range (int(t0//dt)):
         vector_now, t_now = rk_step(f, vectors[-1], dt, t[-1])
-        vectors.append(vector_now.copy())
+        vectors.append(vector_now)
         t.append(t_now)
 
     if check_time(dt, t0) != 0:
         vector_now, t_now = rk_step(f, vectors[-1], check_time(dt, t0), t[-1])
-        vectors.append(vector_now.copy())
+        vectors.append(vector_now)
         t.append(t_now)
     return t, vectors
 
