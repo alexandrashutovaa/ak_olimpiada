@@ -62,15 +62,20 @@ Omega_res = []
 i_res = []
 a_res=[]
 e_res=[]
+mu=398600.4418
+Re = 6378.1
     
 for g in range(len(state_vectors)):
     r = state_vectors[g][:3]  
     v = state_vectors[g][3:]  
-    Omega, i, a, e = calculate_kepler_elements(r, v, mu=398600.4418)
+    Omega, i, a, e = calculate_kepler_elements(r, v, mu)
     Omega_res += [Omega]
     i_res += [i]
     a_res += [a]
     e_res += [e]
+a = np.mean(a_res)
+i = np.mean(i_res)
+e = np.mean(e_res)
 
 fig, ax = plt.subplots()
     
@@ -78,4 +83,9 @@ ax.scatter(times, Omega_res, s=1, alpha=0.7, color="blue")
 ax.set_xlabel('Время (минуты)')
 ax.set_ylabel('Долгота восходящего узла')
 ax.grid(True, alpha=0.3)
+k, b = np.polyfit(times, Omega_res, 1)
+ax.plot(times, k*times + b, 'r-', linewidth=2, label=f'МНК: y={a:.4f}x+{b:.4f}')
+print(k)
 plt.show()
+j2 = (2 * k * a**2 * (1 - e**2)**2)/(-3 * (mu/a**3)**0.5 * Re**2)
+print(j2)
